@@ -19,6 +19,13 @@ log
 	3
 =
 	variable
-	// asdasd
+	// This is a single line comment.
+	/* This is a multiline comment.
+	Line.
+	Line.
+	Line.
+	Line.
+	Line.
+	*/
 log
 debug

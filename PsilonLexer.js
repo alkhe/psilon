@@ -37,7 +37,7 @@ var Psilon = module.exports = function() {
 };
 
 var Tokenizer = function(text) {
-	var pseudo = text.trim().replace(/\/\/[^\n]*\n/, '').match(/(\b[^\'\"]+\b)|(\'.*?\')/g),
+	var pseudo = text.trim().replace(/\/\/[^\n]*\n/, '').replace(/\/\*([\s\S]*?)\*\//, '').match(/(\b[^\'\"]+\b)|(\'.*?\')/g),
 		words = [],
 		next = 0;
 
