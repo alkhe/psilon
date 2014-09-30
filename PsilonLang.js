@@ -126,7 +126,13 @@ var Lang = module.exports = {
 		checkStackUnderflow(context, 2);
 		var exponent = context.stack.pop(),
 			radix = context.stack.pop();
-		if (Validate.binaryOperation([radix, exponent], [Type.Number])) {
+		if (Validate.binaryOperation([radix, exponent], [Type.Number, Type.Object])) {
+			if (Validate.getType(radix) == Type.Object) {
+				radix = context.objects[dividend].value;
+			}
+			if (Validate.getType(exponent) == Type.Object) {
+				exponent = context.objects[exponent].value;
+			}
 			context.stack.push(Math.pow(radix, exponent));
 		}
 		else {
@@ -142,9 +148,6 @@ var Lang = module.exports = {
 		var value = context.stack.pop(),
 			object = context.stack.pop();
 			console.log(object);
-			console.log();
-			console.log();
-			console.log(555);
 		if (Validate.getType(object) != Type.Object) {
 			throwIncompatibleOperation(object);
 		}
