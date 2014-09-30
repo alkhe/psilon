@@ -58,7 +58,13 @@ var Lang = module.exports = {
 		checkStackUnderflow(context, 2);
 		var addend = context.stack.pop(),
 		 	augend = context.stack.pop();
-		if (Validate.binaryOperation([augend, addend], [Type.Number, Type.String])) {
+		if (Validate.binaryOperation([augend, addend], [Type.Number, Type.String, Type.Object])) {
+			if (Validate.getType(augend) == Type.Object) {
+				augend = context.objects[augend].value;
+			}
+			if (Validate.getType(addend) == Type.Object) {
+				addend = context.objects[addend].value;
+			}
 			context.stack.push(augend + addend);
 		}
 		else {
@@ -69,7 +75,13 @@ var Lang = module.exports = {
 		checkStackUnderflow(context, 2);
 		var subtrahend = context.stack.pop(),
 			minuend = context.stack.pop();
-		if (Validate.binaryOperation([minuend, subtrahend], [Type.Number])) {
+		if (Validate.binaryOperation([minuend, subtrahend], [Type.Number, Type.Object])) {
+			if (Validate.getType(minuend) == Type.Object) {
+				minuend = context.objects[minuend].value;
+			}
+			if (Validate.getType(subtrahend) == Type.Object) {
+				subtrahend = context.objects[subtrahend].value;
+			}
 			context.stack.push(minuend - subtrahend);
 		}
 		else {
@@ -80,7 +92,13 @@ var Lang = module.exports = {
 		checkStackUnderflow(context, 2);
 		var multiplier = context.stack.pop(),
 			multiplicand = context.stack.pop();
-		if (Validate.binaryOperation([multiplicand, multiplier], [Type.Number])) {
+		if (Validate.binaryOperation([multiplicand, multiplier], [Type.Number, Type.Object])) {
+			if (Validate.getType(multiplicand) == Type.Object) {
+				multiplicand = context.objects[multiplicand].value;
+			}
+			if (Validate.getType(multiplier) == Type.Object) {
+				multiplier = context.objects[multiplier].value;
+			}
 			context.stack.push(multiplicand * multiplier);
 		}
 		else {
@@ -91,7 +109,13 @@ var Lang = module.exports = {
 		checkStackUnderflow(context, 2);
 		var divisor = context.stack.pop();
 			dividend = context.stack.pop();
-		if (Validate.binaryOperation([dividend, divisor], [Type.Number])) {
+		if (Validate.binaryOperation([dividend, divisor], [Type.Number, Type.Object])) {
+			if (Validate.getType(dividend) == Type.Object) {
+				dividend = context.objects[dividend].value;
+			}
+			if (Validate.getType(divisor) == Type.Object) {
+				divisor = context.objects[divisor].value;
+			}
 			context.stack.push(dividend / divisor);
 		}
 		else {
@@ -106,7 +130,7 @@ var Lang = module.exports = {
 			context.stack.push(Math.pow(radix, exponent));
 		}
 		else {
-			throwIncompatibleOperation([dividend, divisor]);
+			throwIncompatibleOperation([radix, exponent]);
 		}
 	},
 	'var': function(context) {
@@ -115,7 +139,18 @@ var Lang = module.exports = {
 	},
 	'=': function(context) {
 		checkStackUnderflow(context, 2);
-		var value = context.stack.pop();
-		context.objects[context.stack.pop()].set(value);
+		var value = context.stack.pop(),
+			object = context.stack.pop();
+			console.log(object);
+			console.log();
+			console.log();
+			console.log(555);
+		if (Validate.getType(object) != Type.Object) {
+			throwIncompatibleOperation(object);
+		}
+		if (Validate.getType(value) == Type.Object) {
+			value = context.objects[value].value;
+		}
+		context.objects[object].set(value);
 	}
 };

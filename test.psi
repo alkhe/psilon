@@ -15,9 +15,7 @@ log
 var variable
 	'variable'
 log
-	variable
-	3
-=
+variable 3 =
 	variable
 	// This is a single line comment.
 	/* This is a multiline comment.
@@ -28,4 +26,20 @@ log
 	Line.
 	*/
 log
+var a
+var b
+var c
+a 5 =
+b 6 =
+	a b +
+log
+	c
+	a 3 -
+=
+
+	a b +
+	c
+	**
+log
+
 // debug
