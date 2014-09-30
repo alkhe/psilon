@@ -1,7 +1,7 @@
 var Validate = require('./PsilonValidate');
 
 var Tokenizer = module.exports = function(text) {
-	var pseudo = text.trim().replace(/\/\/[^\n]*\n/, '').replace(/\/\*([\s\S]*?)\*\//, '').match(/(\b[^\'\"]+\b)|(\'.*?\')/g),
+	var pseudo = text.trimLeft().replace(/\/\/[^\n]*\n/g, '').replace(/\/\*([\s\S]*?)\*\//g, '').match(/(\b[^\'\"]+\b)|(\'.*?\')/g),
 		words = [],
 		next = 0;
 
