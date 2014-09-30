@@ -1,8 +1,9 @@
 var Lang = require('./PsilonLang'),
+	Tokenizer = require('./PsilonTokenizer'),
 	Validate = require('./PsilonValidate');
 
 var Psilon = module.exports = function() {
-	var dictionary = Lang,
+	var keywords = Lang,
 		stack = this.stack = [];
 		objects = this.objects = {};
 
@@ -17,8 +18,8 @@ var Psilon = module.exports = function() {
 			word;
 
 		while (word = tokenizer.next()) {
-			if (dictionary[word]) {
-				dictionary[word](this);
+			if (keywords[word]) {
+				keywords[word](this);
 			}
 			else if (Validate.isStringType(word)) {
 				stack.push(word);
@@ -34,31 +35,4 @@ var Psilon = module.exports = function() {
 	};
 
 	return this;
-};
-
-var Tokenizer = function(text) {
-	var pseudo = text.trim().replace(/\/\/[^\n]*\n/, '').replace(/\/\*([\s\S]*?)\*\//, '').match(/(\b[^\'\"]+\b)|(\'.*?\')/g),
-		words = [],
-		next = 0;
-
-	for (var i = 0; i < pseudo.length; i++) {
-		if (Validate.isStringType(pseudo[i])) {
-			words.push(pseudo[i]);
-		}
-		else {
-			words = words.concat(pseudo[i].split(/\s+/));
-		}
-	}
-
-	return {
-		tokensLeft: function() {
-			return words.length - next;
-		},
-		hasNext: function() {
-			return next < words.length;
-		},
-		next: function() {
-			return next < words.length ? words[next++] : null;
-		}
-	};
 };
