@@ -1,0 +1,23 @@
+	34 34 +
+log
+	2 3 *
+log
+	9 3 /
+log
+		5 5 +
+		123 23 -
+	*
+log
+	2 3 **
+log
+	'hello world'
+log
+var variable
+	'variable'
+log
+	variable
+	3
+=
+	variable
+log
+debug
