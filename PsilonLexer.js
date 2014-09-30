@@ -20,10 +20,10 @@ var Psilon = module.exports = function() {
 			if (dictionary[word]) {
 				dictionary[word](this);
 			}
-			else if (Validate.isString(word)) {
+			else if (Validate.isStringType(word)) {
 				stack.push(word);
 			}
-			else if (Validate.isNumber(word)) {
+			else if (Validate.isNumberType(word)) {
 				stack.push(Number(word));
 			}
 			else {
@@ -42,7 +42,7 @@ var Tokenizer = function(text) {
 		next = 0;
 
 	for (var i = 0; i < pseudo.length; i++) {
-		if (Validate.isString(pseudo[i])) {
+		if (Validate.isStringType(pseudo[i])) {
 			words.push(pseudo[i]);
 		}
 		else {

@@ -1,21 +1,28 @@
 var Err = require('./PsilonError'),
 	Data = require('./PsilonData'),
+	Type = require('./PsilonType'),
 	Validate = require('./PsilonValidate');
 
-var stackUnderflowCheck = function(context, required) {
+var checkStackUnderflow = function(context, required) {
 		if (context.stack.length < required) {
-			throw Err.StackUnderflowError;
+			throw Err.StackUnderflowError(required);
 		}
 	},
-	endOfTokenListCheck = function(context, required) {
+	checkEndOfTokenList = function(context, required) {
 		if (context.tokenizer.tokensLeft() < required) {
-			throw Err.EndOfTokenListError;
+			throw Err.EndOfTokenListError(required);
 		}
 	},
-	undefinedObjectCheck = function(context, required) {
+	checkUndefinedObject = function(context, required) {
 		if (!context.objects[required]) {
-			throw Err.UndefinedObjectError;
+			throw Err.UndefinedObjectError(required);
 		}
+	},
+	throwIncompatibleOperation = function(erroneous) {
+		throw Err.IncompatibleOperation(required);
+	},
+	throwInternal = function(erroneous) {
+		throw Err.InternalError(required);
 	};
 
 var makeData = function(context, name) {
@@ -24,17 +31,22 @@ var makeData = function(context, name) {
 
 module.exports = {
 	'log': function(context) {
-		stackUnderflowCheck(context, 1);
+		checkStackUnderflow(context, 1);
 		var output = context.stack.pop();
-		if (Validate.isString(output)) {
-			output = output.substring(1, output.length - 1);
-		}
-		else if (Validate.isNumber(output)) {
+		switch (Validate.getType(output)) {
+			case Type.Number:
 
-		}
-		else {
-			undefinedObjectCheck(context, output);
-			output = context.objects[output].value;
+				break;
+			case Type.String:
+				output = Validate.deString(output);
+				break;
+			case Type.Object:
+				checkUndefinedObject(context, output);
+				output = context.objects[output].value;
+				break;
+			default:
+				throwInternal(output);
+				break;
 		}
 		console.log(output);
 	},
@@ -42,34 +54,66 @@ module.exports = {
 		console.log(context);
 	},
 	'+': function(context) {
-		stackUnderflowCheck(context, 2);
-		context.stack.push(context.stack.pop() + context.stack.pop());
+		checkStackUnderflow(context, 2);
+		var addend = context.stack.pop(),
+		 	augend = context.stack.pop();
+		if (Validate.binaryOperation([augend, addend], [Type.Number, Type.String])) {
+			context.stack.push(augend + addend);
+		}
+		else {
+			throwIncompatibleOperation([augend, addend]);
+		}
 	},
 	'-': function(context) {
-		stackUnderflowCheck(context, 2);
-		var subtrahend = context.stack.pop();
-		context.stack.push(context.stack.pop() - subtrahend);
+		checkStackUnderflow(context, 2);
+		var subtrahend = context.stack.pop(),
+			minuend = context.stack.pop();
+		if (Validate.binaryOperation([minuend, subtrahend], [Type.Number])) {
+			context.stack.push(minuend - subtrahend);
+		}
+		else {
+			throwIncompatibleOperation([minuend, subtrahend]);
+		}
 	},
 	'*': function(context) {
-		stackUnderflowCheck(context, 2);
-		context.stack.push(context.stack.pop() * context.stack.pop());
+		checkStackUnderflow(context, 2);
+		var multiplier = context.stack.pop(),
+			multiplicand = context.stack.pop();
+		if (Validate.binaryOperation([multiplicand, multiplier], [Type.Number])) {
+			context.stack.push(multiplicand * multiplier);
+		}
+		else {
+			throwIncompatibleOperation([multiplicand, multiplier]);
+		}
 	},
 	'/': function(context) {
-		stackUnderflowCheck(context, 2);
+		checkStackUnderflow(context, 2);
 		var divisor = context.stack.pop();
-		context.stack.push(context.stack.pop() / divisor);
+			dividend = context.stack.pop();
+		if (Validate.binaryOperation([dividend, divisor], [Type.Number])) {
+			context.stack.push(dividend / divisor);
+		}
+		else {
+			throwIncompatibleOperation([dividend, divisor]);
+		}
 	},
 	'**': function(context) {
-		stackUnderflowCheck(context, 2);
-		var exponent = context.stack.pop();
-		context.stack.push(Math.pow(context.stack.pop(), exponent));
+		checkStackUnderflow(context, 2);
+		var exponent = context.stack.pop(),
+			radix = context.stack.pop();
+		if (Validate.binaryOperation([radix, exponent], [Type.Number])) {
+			context.stack.push(Math.pow(radix, exponent));
+		}
+		else {
+			throwIncompatibleOperation([dividend, divisor]);
+		}
 	},
 	'var': function(context) {
-		endOfTokenListCheck(context, 1);
+		checkEndOfTokenList(context, 1);
 		makeData(context, context.tokenizer.next());
 	},
 	'=': function(context) {
-		stackUnderflowCheck(context, 2);
+		checkStackUnderflow(context, 2);
 		var value = context.stack.pop();
 		context.objects[context.stack.pop()].set(value);
 	}
