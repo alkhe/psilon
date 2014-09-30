@@ -1,6 +1,7 @@
 var Err = require('./PsilonError'),
 	Data = require('./PsilonData'),
 	Type = require('./PsilonType'),
+	Util = require('./PsilonUtil'),
 	Validate = require('./PsilonValidate');
 
 var checkStackUnderflow = function(context, required) {
@@ -29,7 +30,7 @@ var makeData = function(context, name) {
 	context.objects[name] = new Data();
 };
 
-module.exports = {
+var Lang = module.exports = {
 	'log': function(context) {
 		checkStackUnderflow(context, 1);
 		var output = context.stack.pop();
@@ -38,7 +39,7 @@ module.exports = {
 
 				break;
 			case Type.String:
-				output = Validate.deString(output);
+				output = Util.deString(output);
 				break;
 			case Type.Object:
 				checkUndefinedObject(context, output);
@@ -117,4 +118,4 @@ module.exports = {
 		var value = context.stack.pop();
 		context.objects[context.stack.pop()].set(value);
 	}
-}
+};

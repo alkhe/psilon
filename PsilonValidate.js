@@ -37,8 +37,5 @@ var Validate = module.exports = {
 			}
 		}
 		return false;
-	},
-	deString: function(value) {
-		return value.substring(1, value.length - 1);
 	}
-}
+};

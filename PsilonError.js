@@ -1,4 +1,4 @@
-module.exports = {
+var Error = module.exports = {
 	StackUnderflowError: function(value) {
 		return new Error('StackUnderflowError - Not enough items on stack: ' + value);
 	},
@@ -14,4 +14,4 @@ module.exports = {
 	InternalError: function(value) {
 		return new Error('InternalError - Internal language error: ' + value);
 	}
-}
+};
